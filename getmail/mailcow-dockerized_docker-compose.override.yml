@@ -1,0 +1,10 @@
+version: '2.1'
+services:
+
+    dovecot-mailcow:
+      networks:
+        network-getmail:
+
+networks:
+  network-getmail:
+    external: true    

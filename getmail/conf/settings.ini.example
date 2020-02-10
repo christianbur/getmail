@@ -1,0 +1,27 @@
+[DEFAULT]
+imap_hostname:     MUST_BE_DEFINED_INDIVIDUALLY
+imap_port:         993
+imap_username:     MUST_BE_DEFINED_INDIVIDUALLY
+imap_password:     MUST_BE_DEFINED_INDIVIDUALLY
+imap_debug:        False
+imap_move_enable:  False
+imap_move_folder:  getmail
+lmtp_hostname:     dovecot-mailcow
+lmtp_port:         24
+lmtp_recipient:    mail@example.com
+lmtp_debug:        False
+
+[test1_gmx.de]
+imap_hostname:     imap.gmx.net
+imap_username:     test1@gmx.de
+imap_password:     xxxxx
+
+[test2_gmx.de]
+imap_hostname:     imap.gmx.net
+imap_username:     test2@gmx.de
+imap_password:     xxxxx
+
+[test3_gmail.com]
+imap_hostname:     imap.gmail.com
+imap_username:     test3@gmail.com
+imap_password:     xxxxx

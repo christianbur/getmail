@@ -1,0 +1,21 @@
+version: '2.4'
+services:
+
+    getmail:
+      image: cb/getmail
+      build: ./Dockerfiles
+      environment:
+        - TZ=${TZ}
+      volumes:
+        - ./conf/settings.ini:/app/settings.ini:ro
+      restart: always
+      mem_limit: 100m
+      mem_reservation: 20m
+      networks:
+        network-getmail:
+
+#docker network create --driver=bridge --ipv6 --subnet=fdcb:9c90:23:11::/64 --gateway=fdcb:9c90:23:11::1 --subnet=172.23.11.0/24 --gateway=172.23.11.1 -o "com.docker.network.bridge.name"="br-getmail" network-getmail     
+networks:
+  network-getmail:
+    external: true                
+
