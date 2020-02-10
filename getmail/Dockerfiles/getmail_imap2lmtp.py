@@ -195,7 +195,6 @@ class Getmail(threading.Thread):
 
          try:
            #https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
-           logging.info(email.header.make_header(email.header.decode_header(email_message.get('From'))))
            lmtp.send_message(email_message, to_addrs=self.settings["lmtp_recipient"])
          except Exception as e:
            logging.error("LMTP deliver (Exception - send_message #1): %s" % (e))
