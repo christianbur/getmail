@@ -19,17 +19,32 @@ import configparser
 
 class Getmail(threading.Thread):
    
-    def __init__(self, settings):
+    def __init__(self, configparser_file, config_name):
         threading.Thread.__init__(self)
         self.event = threading.Event()
-        self.settings = settings
-        self.setName("Thread-%s" % self.settings["config_name"])
+        #self.configparser_file = configparser_file
+        #self.config_name = config_name
+        self.setName("Thread-%s" % config_name)
         self.imap = None
         self.exit_imap_idle_loop = False
         self.exception_counter = 0
         self.print_lock = threading.Lock()
         self.last_renew_imap_idle_connection = time.monotonic()
         self.idle_check_timeout = 1
+
+        self.imap_hostname    = configparser_file.get(       config_name, 'imap_hostname')
+        self.imap_port        = configparser_file.getint(    config_name, 'imap_port')
+        self.imap_username    = configparser_file.get(       config_name, 'imap_username')
+        self.imap_password    = configparser_file.get(       config_name, 'imap_password')
+        self.imap_move_folder = configparser_file.get(       config_name, 'imap_move_folder')
+        self.imap_sync_folder = configparser_file.get(       config_name, 'imap_sync_folder')
+        self.imap_move_enable = configparser_file.getboolean(config_name, 'imap_move_enable')
+        self.imap_debug       = configparser_file.getboolean(config_name, 'imap_debug')
+        self.lmtp_hostname    = configparser_file.get(       config_name, 'lmtp_hostname')
+        self.lmtp_port        = configparser_file.getint(    config_name, 'lmtp_port')
+        self.lmtp_recipient   = configparser_file.get(       config_name, 'lmtp_recipient')
+        self.lmtp_debug       = configparser_file.getboolean(config_name, 'lmtp_debug')
+
 
     def run(self):
         while not self.exit_imap_idle_loop:
@@ -52,24 +67,24 @@ class Getmail(threading.Thread):
 
  
     def imap_start_connection(self):
-        logging.info("Start Getmail - server: %s:%s, username: %s" % (self.settings["imap_hostname"], self.settings["imap_port"], self.settings["imap_username"]))
+        logging.info("Start Getmail - server: %s:%s, username: %s" % (self.imap_hostname, self.imap_port, self.imap_username))
 
-        self.imap = imapclient.IMAPClient(self.settings["imap_hostname"],port=self.settings["imap_port"], ssl=True, use_uid=True)
-        login_status = self.imap.login(self.settings["imap_username"],self.settings["imap_password"])
+        self.imap = imapclient.IMAPClient(self.imap_hostname, port=self.imap_port, ssl=True, use_uid=True)
+        login_status = self.imap.login(self.imap_username, self.imap_password)
         #logging.info("Login - status: %s" % login_status)
 
         if not self.imap.has_capability('IDLE'):
             logging.error("Server doesn't support IDLE!!")
             sys.exit()
         
-#        if self.settings["imap_debug"]:
+#        if self.imap_debug:
 #          self.imap.debug = True
 #          logging.basicConfig(level=logging.DEBUG)
 #        else:
 #          self.imap.debug = False
 #          logging.basicConfig(level=logging.INFO)
 
-        self.imap.select_folder('INBOX')
+        self.imap.select_folder(self.imap_sync_folder)
 
         self.exception_counter = 0
 
@@ -109,7 +124,7 @@ class Getmail(threading.Thread):
 
         if responses == []:
             if (execution_time_idle_check < self.idle_check_timeout / 2):
-              logging.info("TEST -- IMAP IDLE response: %s " % responses)
+              #logging.info("TEST -- IMAP IDLE response: %s " % responses)
               raise Exception('idle_check responded too quickly, something is wrong with the IMAP Idle connection (execution_time_idle_check: %s' % execution_time_idle_check)
             else:
               # default action, when everything is ok  
@@ -150,7 +165,7 @@ class Getmail(threading.Thread):
           email_message = email.message_from_bytes(message_data[b'RFC822'])
           #logging.info("%s,%s,%s" % (uid, email_message.get('From'), email_message.get('Subject')) )
           if self.lmtp_deliver_mail(email_message):
-            if self.settings["imap_move_enable"]:
+            if self.imap_move_enable:
               self.imap_move_mail(uid)
             else:
               self.imap_delete_mail(uid)
@@ -162,69 +177,71 @@ class Getmail(threading.Thread):
         logging.info('IMAP delete: delete email (uid: %s)' % str(uid) )
 
     def create_imap_move_folder(self):
-        if self.settings["imap_move_enable"]:
-          if self.imap.folder_exists(self.settings["imap_move_folder"]):
-            logging.info("imap_move_folder (%s) already exists, nothing to do." % (self.settings["imap_move_folder"]))
+        if self.imap_move_enable:
+          if self.imap.folder_exists(self.imap_move_folder):
+            logging.info("imap_move_folder (%s) already exists, nothing to do." % (self.imap_move_folder))
           else:
-            status =  self.imap.create_folder(self.settings["imap_move_folder"])
-            logging.info("imap_move_folder (%s) create status: %s " % (self.settings["imap_move_folder"], status))
+            status =  self.imap.create_folder(self.imap_move_folder)
+            logging.info("imap_move_folder (%s) create status: %s " % (self.imap_move_folder, status))
 
 
     def imap_move_mail(self, uid):
-        self.imap.move(uid, self.settings["imap_move_folder"])
-        logging.info('IMAP move: move email to imap_move_folder (%s)' % (self.settings["imap_move_folder"]) )
+        self.imap.move(uid, self.imap_move_folder)
+        logging.info('IMAP move: move email to imap_move_folder (%s)' % (self.imap_move_folder) )
 
  
     def lmtp_deliver_mail(self, email_message):
-       logging.info( "LMTP deliver: start -- LMTP host: %s:%s" % (self.settings["lmtp_hostname"], self.settings["lmtp_port"]))
-       try: 
+        logging.info( "LMTP deliver: start -- LMTP host: %s:%s" % (self.lmtp_hostname, self.lmtp_port))
+        try: 
          
-         try:
-           lmtp = smtplib.LMTP(self.settings["lmtp_hostname"], self.settings["lmtp_port"])
-         except ConnectionRefusedError as e:
-           logging.error("LMTP deliver (ConnectionRefusedError): %s" % (e))
-           return False
-         except socket.gaierror as e:
-           logging.error("LMTP deliver (LMTP-Server is not reachable): %s" % (e))  
-           return False  
+          try:
+            lmtp = smtplib.LMTP(self.lmtp_hostname, self.lmtp_port)
+          except ConnectionRefusedError as e:
+            logging.error("LMTP deliver (ConnectionRefusedError): %s" % (e))
+            return False
+          except socket.gaierror as e:
+            logging.error("LMTP deliver (LMTP-Server is not reachable): %s" % (e))  
+            return False  
 
-         if self.settings["lmtp_debug"]:
-                lmtp.set_debuglevel(1)
+          if self.lmtp_debug:
+            lmtp.set_debuglevel(1)
 
-         email_message['X-getmail-retrieved-from-mailbox-user'] = self.settings["imap_username"]
+          email_message['X-getmail-retrieved-from-mailbox-user'] = self.imap_username
 
-         try:
-           #https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
-           lmtp.send_message(email_message, to_addrs=self.settings["lmtp_recipient"])
-         except Exception as e:
-           logging.error("LMTP deliver (Exception - send_message #1): %s" % (e))
-           traceback.print_exc()
+          try:
+            #https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
+            lmtp.send_message(email_message, to_addrs=self.lmtp_recipient)
+          except Exception as e:
+            logging.error("LMTP deliver (Exception - send_message #1): %s" % (e))
+            traceback.print_exc()
 
-           try:
-             email_from = email_message.get('From')
-             lmtp.send_message(email_message, from_addr=email_from, to_addrs=self.settings["lmtp_recipient"])
-           except Exception as e:
-             logging.error("LMTP deliver (Exception - send_message #2): %s" % (e))
-             return False
+            try:
+              email_from = email_message.get('From')
+              lmtp.send_message(email_message, from_addr=email_from, to_addrs=self.lmtp_recipient)
+            except Exception as e:
+              logging.error("LMTP deliver (Exception - send_message #2): %s" % (e))
+              return False
                  
-           #return False
-         finally:
-           lmtp.quit()
+            #return False
+          finally:
+            lmtp.quit()
 
-         try:
-           email_from_decoded    = email.header.make_header(email.header.decode_header(email_message.get('From')))
-           email_subject_decoded = email.header.make_header(email.header.decode_header(email_message.get('Subject')))
-           logging.info(u'LMTP deliver: new eMail from: [%s], subject: [%s] ----> LMTP recipient: %s' % (email_from_decoded, email_subject_decoded, self.settings["lmtp_recipient"]) )
-         except Exception as e:
-           logging.error("LMTP deliver (Exception - decode error): %s" % (e))
-           logging.info(u'LMTP deliver: new eMail ----> LMTP recipient: %s' % (self.settings["lmtp_recipient"]) )
+          try:
+            email_from_decoded    = email.header.make_header(email.header.decode_header(email_message.get('From')))
+            email_subject_decoded = email.header.make_header(email.header.decode_header(email_message.get('Subject')))
+            #logging.info(u'LMTP deliver: new eMail from: [%s], subject: [%s] ----> LMTP recipient: %s' % (email_from_decoded, email_subject_decoded, self.lmtp_recipient))
+            logging.info(u'LMTP deliver: new eMail from: [%s], subject: [%s]' % (email_from_decoded, email_subject_decoded))
+          except Exception as e:
+            logging.error("LMTP deliver (Exception - decode error): %s" % (e))
+            #logging.info(u'LMTP deliver: new eMail ----> LMTP recipient: %s' % (self.lmtp_recipient))
+            logging.info(u'LMTP deliver: new eMail')
             
-         return True
+          return True
 
-       except Exception as e:
-         logging.error("LMTP deliver (Exception): %s" % (e))
-         logging.error(traceback.format_exc())
-         return False
+        except Exception as e:
+          logging.error("LMTP deliver (Exception): %s" % (e))
+          logging.error(traceback.format_exc())
+          return False
 
 
 ########################################################################################################################
@@ -234,11 +251,11 @@ class Getmail(threading.Thread):
 
 def start_getmail():
 
-  all_config_sections = get_config_sections()
+  configparser_file = get_configparser_file()
   all_connections = {}
 
-  for config_name in all_config_sections:
-        all_connections[config_name] = Getmail(all_config_sections[config_name])
+  for config_name in configparser_file.sections():
+        all_connections[config_name] = Getmail(configparser_file, config_name)
         all_connections[config_name].start()  
 
   try: 
@@ -260,7 +277,7 @@ def start_getmail():
     logging.info("END: shutdown all IMAP connections")
 
 
-def get_config_sections():
+def get_configparser_file():
 
   if os.path.isfile("./settings.ini"):
     config_file_path = "./settings.ini"
@@ -272,39 +289,7 @@ def get_config_sections():
   configparser_file = configparser.ConfigParser()
   configparser_file.read([os.path.abspath(config_file_path)])
 
-  all_config_sections = {}
-
-
-  for config_name in configparser_file.sections():
-
-        all_config_sections[config_name] = {}
-        all_config_sections[config_name]["config_name"]      = config_name
-        all_config_sections[config_name]["imap_hostname"]    = configparser_file.get(config_name, 'imap_hostname')
-        all_config_sections[config_name]["imap_port"]        = int (configparser_file.get(config_name, 'imap_port') )
-        all_config_sections[config_name]["imap_username"]    = configparser_file.get(config_name, 'imap_username')
-        all_config_sections[config_name]["imap_password"]    = configparser_file.get(config_name, 'imap_password')
-        all_config_sections[config_name]["imap_move_folder"] = configparser_file.get(config_name, 'imap_move_folder')
-        if configparser_file.get(config_name, 'imap_move_enable') == "False":
-                all_config_sections[config_name]["imap_move_enable"] = False
-        else:
-                all_config_sections[config_name]["imap_move_enable"] = True
-
-        if configparser_file.get(config_name, 'imap_debug') == "True":
-                all_config_sections[config_name]["imap_debug"] = True
-        else:
-                all_config_sections[config_name]["imap_debug"] = False
-
-        all_config_sections[config_name]["lmtp_hostname"]    = configparser_file.get(config_name, 'lmtp_hostname')
-        all_config_sections[config_name]["lmtp_port"]        = int (configparser_file.get(config_name, 'lmtp_port') )
-        all_config_sections[config_name]["lmtp_recipient"]   = configparser_file.get(config_name, 'lmtp_recipient')
-        if configparser_file.get(config_name, 'lmtp_debug') == "True":
-                all_config_sections[config_name]["lmtp_debug"] = True
-        else:
-                all_config_sections[config_name]["lmtp_debug"] = False
-
-
-  return all_config_sections
-
+  return configparser_file
 
 def exit_gracefully(signum, frame):
     logging.info("Caught signal %d" % signum)
