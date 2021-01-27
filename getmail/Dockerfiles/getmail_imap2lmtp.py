@@ -88,7 +88,6 @@ class Getmail(threading.Thread):
 
         self.exception_counter = 0
 
-        self.create_imap_move_folder()
 
     def imap_close_connection(self):
         if self.imap != None:
@@ -97,6 +96,8 @@ class Getmail(threading.Thread):
 
     def imap_idle(self):
         self.imap_start_connection()
+        self.create_imap_move_folder()
+        logging.info("IMAP fetch mail - inital")
         self.imap_fetch_mail()
 
         # Start IDLE mode
