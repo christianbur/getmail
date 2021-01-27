@@ -6,6 +6,7 @@ imap_password:     MUST_BE_DEFINED_INDIVIDUALLY
 imap_debug:        False
 imap_move_enable:  False
 imap_move_folder:  getmail
+imap_sync_folder:  INBOX
 lmtp_hostname:     dovecot-mailcow
 lmtp_port:         24
 lmtp_recipient:    mail@example.com
