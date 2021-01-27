@@ -9,7 +9,7 @@ imap_move_folder:  getmail
 imap_sync_folder:  INBOX
 lmtp_hostname:     dovecot-mailcow
 lmtp_port:         24
-lmtp_recipient:    mail@example.com
+lmtp_recipient:    mail@mailcow-mailbox-please-adjust.com
 lmtp_debug:        False
 
 [test1_gmx.de]
