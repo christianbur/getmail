@@ -71,7 +71,7 @@ class Getmail(threading.Thread):
 
         self.imap = imapclient.IMAPClient(self.imap_hostname, port=self.imap_port, ssl=True, use_uid=True)
         login_status = self.imap.login(self.imap_username, self.imap_password)
-        #logging.info("Login - status: %s" % login_status)
+        logging.info("Login - status: %s" % login_status)
 
         if not self.imap.has_capability('IDLE'):
             logging.error("Server doesn't support IDLE!!")
