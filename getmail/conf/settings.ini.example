@@ -7,6 +7,7 @@ imap_debug:        False
 imap_move_enable:  False
 imap_move_folder:  getmail
 imap_sync_folder:  INBOX
+imap_ssl:          True
 lmtp_hostname:     dovecot-mailcow
 lmtp_port:         24
 lmtp_recipient:    mail@mailcow-mailbox-please-adjust.com
@@ -14,8 +15,10 @@ lmtp_debug:        False
 
 [test1_gmx.de]
 imap_hostname:     imap.gmx.net
+imap_port:         143
 imap_username:     test1@gmx.de
 imap_password:     xxxxx
+imap_ssl:          False
 
 [test2_gmx.de]
 imap_hostname:     imap.gmx.net
