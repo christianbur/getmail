@@ -34,7 +34,7 @@ class Getmail(threading.Thread):
 
         self.imap_hostname    = configparser_file.get(       config_name, 'imap_hostname')
         self.imap_port        = configparser_file.getint(    config_name, 'imap_port')
-        self.imap_ssl         = configparser_file.getboolean(config_name, 'imap_ssl')
+        self.imap_ssl         = configparser_file.getboolean(config_name, 'imap_ssl', fallback=True)
         self.imap_username    = configparser_file.get(       config_name, 'imap_username')
         self.imap_password    = configparser_file.get(       config_name, 'imap_password')
         self.imap_move_folder = configparser_file.get(       config_name, 'imap_move_folder')
