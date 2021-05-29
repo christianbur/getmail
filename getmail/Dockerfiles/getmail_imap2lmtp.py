@@ -288,7 +288,7 @@ def get_configparser_file():
     return
 
   logging.info("use config file: %s" % config_file_path)
-  configparser_file = configparser.ConfigParser()
+  configparser_file = configparser.ConfigParser(interpolation=None)
   configparser_file.read([os.path.abspath(config_file_path)])
 
   return configparser_file
