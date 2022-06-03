@@ -24,7 +24,8 @@ class Getmail(threading.Thread):
         self.event = threading.Event()
         #self.configparser_file = configparser_file
         #self.config_name = config_name
-        self.setName("Thread-%s" % config_name)
+        #self.setName("Thread-%s" % config_name)
+        self.name = "Thread-%s" % config_name
         self.imap = None
         self.exit_imap_idle_loop = False
         self.exception_counter = 0
