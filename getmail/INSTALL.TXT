@@ -34,6 +34,7 @@ In the source IMAP account only one folder is monitored (default = imap_sync_fol
 imap_hostname:     imap.gmx.net
 imap_username:     test@gmx.de
 imap_password:     xxx
+# INFO: "imap_sync_folder: INBOX" is default
 
 [JUNK_test_gmx.de]
 imap_hostname:     imap.gmx.net
