@@ -1,0 +1,30 @@
+Getmail is a small Python script to retrieve emails from IMAP accounts (e.g. gmx.de, gmail.com) and deliver these emails to the Mailcow/Dovecot mailbox. 
+Emails are retrieved using IMAP IDLE, so emails are retrieved immediately and not after a fixed interval (as with imapsync from Mailcow).
+The transfer to Mailcow is done via LMTP interface (simplified SNMP) from Dovecot, so you can also use the sieve rules from Dovecoat (imapsync from Mailcow only allows a fixed folder). 
+
+Install:
+- Copy the getmail folder from github to your server. Preferably on the same level as the mailcow-dockerized folder 
+   e.g. /data/docker_projects/getmail, /data/docker_projects/mailcow-dockerized
+- Copy the docker-compose.override.yml file to the mailcow-dockerized folder 
+   cli# cp /data/docker_projects/getmail/mailcow-dockerized_docker-compose.override.yml /data/docker_projects/mailcow-dockerized/docker-compose.override.yml
+- Because the docker network "network-getmail" is used independently in mailcow and getmail, the network "network-getmail" must be created externally (i.e. not in the docker-compose.yml).
+  Any other IP range can be used, it should only not be already in use (test: ip show -6 route show, ip show route show. 
+   cli# docker network create --driver=bridge --ipv6 --subnet=fdcb:9c90:23:11::/64 --gateway=fdcb:9c90:23:11::1 --subnet=172.23.11.0/24 --gateway=172.23.11.1 -o "com.docker.network.bridge.name"="br-getmail" network-getmail
+- Config file must be customized
+  cli# cp /data/docker_projects/getmail/settings.ini.example  /data/docker_projects/getmail/settings.ini
+  cli# vi /data/docker_projects/getmail/settings.ini
+- Now start mailcow and getmail. 
+   cli# cd /data/docker_projects/mailcow-dockerized/
+   cli#  docker-compose up -d
+   cli# cd /data/docker_projects/getmail/
+   cli#  docker-compose up -d
+ - Now check the logs from getmail 
+    cli#  docker-compose logs
+    
+    Output: 2021-02-08 20:28:41,734 - MainThread - INFO: use config file: ./settings.ini
+    
+    
+Config:
+Everything under [DEFAULT] applies to all IMAP accounts. Mostly only imap_hostname:, imap_username: , imap_password: have to be adjusted. 
+
+   
