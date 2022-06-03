@@ -26,5 +26,46 @@ Install:
     
 Config:
 Everything under [DEFAULT] applies to all IMAP accounts. Mostly only imap_hostname:, imap_username: , imap_password: have to be adjusted. 
+In the source IMAP account only one folder is monitored (default = imap_sync_folder: INBOX), if the junk folder should be monitored as well, two accounts must be created. 
 
+[INBOX_test_gmx.de]
+imap_hostname:     imap.gmx.net
+imap_username:     test@gmx.de
+imap_password:     xxx
+
+[JUNK_test_gmx.de]
+imap_hostname:     imap.gmx.net
+imap_username:     test@gmx.de
+imap_password:     xxx
+imap_sync_folder:  Junk
    
+Normally retrieved emails are deleted from the source IMAP account (imap_move_enable: False), but it is also possible to move the emails to a folder
+
+imap_move_enable: True
+imap_move_folder: getmail
+
+Sieve filter:
+In every retrieved email a header (X-getmail-retrieved-from-mailbox-user) is added, with this you can filter by sieve (Mailcow: Mail Setup -> Filters -> Add Filter)
+
+-----------
+require "fileinto";
+require "regex";
+require "body";
+
+...
+if header :contains ["X-getmail-retrieved-from-mailbox-user"] ["xxxtestxxx@gmx.de", "xxxtest2xxxx@gmx.de"]
+{
+    fileinto "INBOX/Getmail_GMX";
+}
+elsif header :contains ["X-getmail-retrieved-from-mailbox-user"] ["xxxtestxxx@outlook.de", "xxxtest2xxxx@outlook.de"]
+{
+    fileinto "INBOX/Getmail_Outlook";
+}
+else
+{
+  # The rest goes into INBOX
+  # default is "implicit keep", we do it explicitly here
+  keep;
+}
+-----------
+
