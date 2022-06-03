@@ -47,6 +47,7 @@ Normally retrieved emails are deleted from the source IMAP account (imap_move_en
 imap_move_enable: True
 imap_move_folder: getmail
 
+With lmtp_recipient: you specify the destination imap account in mailcow. 
 
 
 
