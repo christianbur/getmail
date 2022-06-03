@@ -42,7 +42,7 @@ imap_username:     test@gmx.de
 imap_password:     xxx
 imap_sync_folder:  Junk
    
-Normally retrieved emails are deleted from the source IMAP account (imap_move_enable: False), but it is also possible to move the emails to a folder in the source IMAP account.
+Normally retrieved emails are deleted from the source IMAP account (imap_move_enable: False), the goal of the script is to completely empty the watched folder (e.g. INBOX). It is also possible to move the emails to a folder in the source IMAP account.
 
 imap_move_enable: True
 imap_move_folder: getmail
