@@ -84,4 +84,6 @@ The TZ vairable defines the time zone. I have defined the variable in the file /
 LANG="en_US.UTF-8"
 LANGUAGE="en_US:en"
 TZ="Europe/Berlin"
-WARNING: The TZ variable is not set. Defaulting to a blank string.
+
+If the TZ variable is not defined, the following error message appears when starting getmail:
+"WARNING: The TZ variable is not set. Defaulting to a blank string."
