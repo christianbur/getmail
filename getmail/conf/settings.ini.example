@@ -10,22 +10,22 @@ imap_sync_folder:  INBOX
 imap_ssl:          True
 lmtp_hostname:     dovecot-mailcow
 lmtp_port:         24
-lmtp_recipient:    mail@mailcow-mailbox-please-adjust.com
+lmtp_recipient:    mail@your-mailcow-mailbox-address.example
 lmtp_debug:        False
 
-[test1_gmx.de]
+[example_test1_gmx.de]
 imap_hostname:     imap.gmx.net
 imap_port:         143
-imap_username:     test1@gmx.de
+imap_username:     example-test1@gmx.de
 imap_password:     xxxxx
 imap_ssl:          False
 
-[test2_gmx.de]
+[example_test2_gmx.de]
 imap_hostname:     imap.gmx.net
-imap_username:     test2@gmx.de
+imap_username:     example-test2@gmx.de
 imap_password:     xxxxx
 
-[test3_gmail.com]
+[example_test3_gmail.com]
 imap_hostname:     imap.gmail.com
-imap_username:     test3@gmail.com
+imap_username:     example-test3@gmail.com
 imap_password:     xxxxx
