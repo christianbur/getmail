@@ -1,8 +1,8 @@
 [DEFAULT]
-imap_hostname:     MUST_BE_DEFINED_INDIVIDUALLY
+#imap_hostname:     MUST_BE_DEFINED_INDIVIDUALLY
+#imap_username:     MUST_BE_DEFINED_INDIVIDUALLY
+#imap_password:     MUST_BE_DEFINED_INDIVIDUALLY
 imap_port:         993
-imap_username:     MUST_BE_DEFINED_INDIVIDUALLY
-imap_password:     MUST_BE_DEFINED_INDIVIDUALLY
 imap_debug:        False
 imap_move_enable:  False
 imap_move_folder:  getmail
@@ -10,22 +10,22 @@ imap_sync_folder:  INBOX
 imap_ssl:          True
 lmtp_hostname:     dovecot-mailcow
 lmtp_port:         24
-lmtp_recipient:    mail@your-mailcow-mailbox-address.example
 lmtp_debug:        False
+lmtp_recipient:    CHANGE-ME@YOUR-MAILCOW-MAILBOX-ADDRESS.EXAMPLE
 
-[example_insecure_test1_gmx.de]
-imap_hostname:     imap.gmx.net
-imap_port:         143
-imap_username:     example-test1@gmx.de
-imap_password:     xxxxx
-imap_ssl:          False
+#[example_insecure_test1_gmx.de]
+#imap_hostname:     imap.gmx.net
+#imap_port:         143
+#imap_username:     example-test1@gmx.de
+#imap_password:     xxxxx
+#imap_ssl:          False
 
-[example_test2_gmx.de]
-imap_hostname:     imap.gmx.net
-imap_username:     example-test2@gmx.de
-imap_password:     xxxxx
+#[example_test2_gmx.de]
+#imap_hostname:     imap.gmx.net
+#imap_username:     example-test2@gmx.de
+#imap_password:     xxxxx
 
-[example_test3_gmail.com]
+[description-example-test-gmail-com]
 imap_hostname:     imap.gmail.com
-imap_username:     example-test3@gmail.com
+imap_username:     example-test@gmail.com
 imap_password:     xxxxx
