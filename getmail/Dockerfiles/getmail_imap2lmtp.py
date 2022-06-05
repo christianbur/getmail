@@ -72,7 +72,7 @@ class Getmail(threading.Thread):
         logging.info("Start Getmail - server: %s:%s, username: %s, ssl: %s" % (self.imap_hostname, self.imap_port, self.imap_username, self.imap_ssl))
 
         self.imap = imapclient.IMAPClient(self.imap_hostname, port=self.imap_port, ssl=self.imap_ssl, use_uid=True)
-        login_status = self.imap.login(self.imap_username, self.imap_password)
+        login_status = self.imap.login(self.imap_username, self.imap_password).decode("utf-8")
         logging.info("Login - status: %s" % login_status)
 
         if not self.imap.has_capability('IDLE'):
