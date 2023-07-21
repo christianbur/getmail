@@ -52,7 +52,7 @@ With lmtp_recipient: you specify the destination imap account in mailcow.
 
 
 Sieve filter:
-In every retrieved email, a header (X-getmail-retrieved-from-mailbox-user) is added, with this information you can filter with sieve (Mailcow: Mail Setup -> Filters -> Add Filter)
+In every retrieved email, two header (X-getmail-retrieved-from-mailbox-user, X-getmail-retrieved-from-mailbox-folder) are added, with this information you can filter with sieve (Mailcow: Mail Setup -> Filters -> Add Filter)
 
 -----------
 require "fileinto";
