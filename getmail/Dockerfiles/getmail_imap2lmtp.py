@@ -210,6 +210,7 @@ class Getmail(threading.Thread):
             lmtp.set_debuglevel(1)
 
           email_message['X-getmail-retrieved-from-mailbox-user'] = self.imap_username
+          email_message['X-getmail-retrieved-from-mailbox-folder'] = self.imap_sync_folder
 
           try:
             #https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message
