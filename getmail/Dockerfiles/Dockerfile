@@ -1,22 +1,17 @@
-FROM alpine:3.18
+FROM alpine:3.19
 
 WORKDIR /app
 
-ARG UID=2999
-ARG GID=2999
+# python3 venv: https://pythonspeed.com/articles/activate-virtualenv-dockerfile/
 
-RUN apk add --update --no-cache python3 py3-pip tzdata \
-    && addgroup -g $GID -S appuser \
-    && adduser  -u $UID -S appuser -G appuser  
+ENV VIRTUAL_ENV=/opt/venv
 
-USER appuser
+RUN apk add --update --no-cache python3 py3-pip py3-virtualenv tzdata \
+    && python3 -m venv $VIRTUAL_ENV 
 
-ENV PATH="/home/appuser/.local/bin:${PATH}"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN python3 -m pip install --user --upgrade pip \
-    && python3 -m pip install --user imapclient configparser 
+RUN pip install imapclient configparser
 
-COPY ./getmail_imap2lmtp.py /app/
-
-
-CMD [ "python3","-u", "/app/getmail_imap2lmtp.py" ]
+COPY getmail_imap2lmtp.py .
+CMD [ "python","-u", "/app/getmail_imap2lmtp.py" ]
