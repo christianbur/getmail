@@ -20,5 +20,5 @@ RUN pip install imapclient
 
 USER appuser
 
-COPY getmail_imap2lmtp.py .
+COPY ./getmail_imap2lmtp.py .
 CMD [ "python","-u", "/app/getmail_imap2lmtp.py" ]
