@@ -3,6 +3,7 @@ services:
 
     getmail:
       image: cb/getmail:latest
+      # build: ./Dockerfiles/     # for local build
       build:
         context: https://github.com/christianbur/docker_projects.git#master
         dockerfile: getmail/Dockerfiles/Dockerfile
@@ -11,8 +12,6 @@ services:
       volumes:
         - ./conf/settings.ini:/app/settings.ini:ro
       restart: always
-      mem_limit: 100m
-      mem_reservation: 20m
       networks:
         network-getmail:
 
