@@ -1,4 +1,4 @@
-import ssl
+iinitmport ssl
 import time
 import os
 import datetime
@@ -99,7 +99,7 @@ class Getmail(threading.Thread):
     def imap_idle(self):
         self.imap_start_connection()
         self.create_imap_move_folder()
-        logging.info("IMAP fetch mail - inital")
+        logging.info("IMAP fetch mail - initial")
         self.imap_fetch_mail()
 
         # Start IDLE mode
