@@ -1,4 +1,4 @@
-iinitmport ssl
+import ssl
 import time
 import os
 import datetime
