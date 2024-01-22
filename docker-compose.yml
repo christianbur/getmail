@@ -3,19 +3,19 @@ services:
 
     getmail:
       image: cb/getmail:latest
-      # build: ./Dockerfiles/     # for local build
+      #  build: ./Dockerfiles/     # for local build
       build:
-        context: https://github.com/christianbur/docker_projects.git#master
-        dockerfile: getmail/Dockerfiles/Dockerfile
+        context: https://github.com/christianbur/getmail.git#master
+        dockerfile: Dockerfiles/Dockerfile
       environment:
-        - TZ=${TZ}
+        - TZ=${TZ}   # if you do not have a global TZ environment variable, use your TZ identifier (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. TZ="Europe/Berlin"
       volumes:
         - ./conf/settings.ini:/app/settings.ini:ro
       restart: always
       networks:
         network-getmail:
 
-#docker network create --driver=bridge --ipv6 --subnet=fdcb:9c90:23:11::/64 --gateway=fdcb:9c90:23:11::1 --subnet=172.23.11.0/24 --gateway=172.23.11.1 -o "com.docker.network.bridge.name"="br-getmail" network-getmail     
+#docker network create --driver=bridge --ipv6 --subnet=fdcb:9c90:23:11::/64 --gateway=fdcb:9c90:23:11::1 --subnet=172.23.11.0/24 --gateway=172.23.11.1 -o "com.docker.network.bridge.name"="br-getmail" network-getmail
 networks:
   network-getmail:
     external: true
